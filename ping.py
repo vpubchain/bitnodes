@@ -103,6 +103,7 @@ class Keepalive(object):
                 except socket.error as err:
                     logging.info("send_addr: Closing %s (%s)", self.node, err)
                     break
+                                
 
             # Sink received messages to flush them off socket buffer
             try:
@@ -271,6 +272,7 @@ def cron(pool):
     """
     publish_key = 'snapshot:{}'.format(hexlify(CONF['magic_number']))
     snapshot = None
+    publish_time = int(time.time())
 
     while True:
         if CONF['master']:
@@ -292,6 +294,12 @@ def cron(pool):
                 # Allow connections to stabilize before publishing snapshot
                 gevent.sleep(CONF['socket_timeout'])
                 REDIS_CONN.publish(publish_key, int(time.time()))
+            
+            waittime = int(time.time()) - publish_time
+            if waittime > 1800:
+                publish_time = int(time.time())
+                logging.info("publish now: %d", publish_time)
+                REDIS_CONN.publish(publish_key, publish_time)
 
             connections = REDIS_CONN.scard('open')
             logging.info("Connections: %d", connections)

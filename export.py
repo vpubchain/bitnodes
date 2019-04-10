@@ -89,6 +89,23 @@ def export_nodes(nodes, timestamp):
     open(dump, 'w').write(json.dumps(rows, encoding="latin-1"))
     logging.info("Wrote %s", dump)
 
+def export_nodes_inv(nodes, timestamp):
+    """
+    Merges enumerated data for the specified nodes and exports them into
+    timestamp-prefixed JSON file.
+    """
+    rows = []
+    start = time.time()
+    for node in nodes:
+        row = get_row(node)
+        rows.append(row)
+    end = time.time()
+    elapsed = end - start
+    logging.info("Elapsed: %d", elapsed)
+
+    dump = os.path.join(CONF['export_dir'], "{}.json".format(timestamp))
+    open(dump, 'w').write(json.dumps(rows, encoding="latin-1"))
+    logging.info("Wrote %s", dump)
 
 def init_conf(argv):
     """

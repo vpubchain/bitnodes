@@ -151,14 +151,27 @@ from cStringIO import StringIO
 from io import SEEK_CUR
 from operator import itemgetter
 
-MAGIC_NUMBER = "\xF9\xBE\xB4\xD9"
-PORT = 8333
+#MAGIC_NUMBER = "\xF9\xBE\xB4\xD9"   #bitcoin,phore
+MAGIC_NUMBER = "\x90\x0D\x90\x3C"  #dash
+#PORT = 8333  #bitcoin
+PORT = 9900  #dash
+#PORT = 11771  #phore
+#MIN_PROTOCOL_VERSION = 70001
+#PROTOCOL_VERSION = 70015
 MIN_PROTOCOL_VERSION = 70001
-PROTOCOL_VERSION = 70015
-FROM_SERVICES = 0
-TO_SERVICES = 1  # NODE_NETWORK
-USER_AGENT = "/bitnodes.earn.com:0.1/"
-HEIGHT = 478000
+PROTOCOL_VERSION = 70208 #dash
+#PROTOCOL_VERSION = 70007  #phore
+#FROM_SERVICES = 0
+FROM_SERVICES = 0  #dash
+#FROM_SERVICES = 13  #phore
+#TO_SERVICES = 1  # NODE_NETWORK
+TO_SERVICES = 5  # dash
+#TO_SERVICES = 13  # phore
+#USER_AGENT = "/bitnodes.earn.com:0.1/"
+USER_AGENT = "/bitnodes.vpubchain.net:0.1/"
+#HEIGHT = 478000
+HEIGHT = 20000
+#HEIGHT = 100
 RELAY = 0  # set to 1 to receive all txs
 
 SOCKET_BUFSIZE = 8192
@@ -266,6 +279,7 @@ class Serializer(object):
         if command == "version":
             to_addr = (self.to_services,) + kwargs['to_addr']
             from_addr = (self.from_services,) + kwargs['from_addr']
+            #from_addr = (1,) + kwargs['from_addr']
             payload = self.serialize_version_payload(to_addr, from_addr)
         elif command == "ping" or command == "pong":
             nonce = kwargs['nonce']
@@ -355,6 +369,8 @@ class Serializer(object):
             struct.pack("<q", int(time.time())),
             self.serialize_network_address(to_addr),
             self.serialize_network_address(from_addr),
+            #self.serialize_network_address(from_addr),
+            #self.serialize_network_address(to_addr),
             struct.pack("<Q", random.getrandbits(64)),
             self.serialize_string(self.user_agent),
             struct.pack("<i", self.height),
@@ -840,6 +856,7 @@ class Connection(object):
         # [version] >>>
         msg = self.serializer.serialize_msg(
             command="version", to_addr=self.to_addr, from_addr=self.from_addr)
+        #msg="91c4fde976657273696f6e000000000068000000c9e4b3c7771101000d0000000000000053674a5c00000000010000000000000000000000000000000000ffff0000000000000d0000000000000000000000000000000000ffff000000002dfb22c878bea976bebf122f50686f726520436f72653a312e362e302fd600000001"
         self.send(msg)
 
         # <<< [version 124 bytes] [verack 24 bytes]
@@ -955,7 +972,10 @@ class Connection(object):
 
 
 def main():
-    to_addr = ("88.99.167.175", PORT)
+    #to_addr = ("136.243.139.96", PORT)
+    to_addr = ("47.104.25.28", PORT)
+    #to_addr = ("47.105.68.82", 11771)
+    #to_addr = ("192.168.0.134", 11771)
     to_services = TO_SERVICES
 
     handshake_msgs = []
@@ -972,6 +992,10 @@ def main():
         print("getaddr")
         addr_msgs = conn.getaddr()
 
+        print("getblocks")
+        block_msgs = conn.getblocks(['0000000e33e10c831906e2c4fb68258618af5d16f0fc381bd14787daaafe0179'])
+        
+
     except (ProtocolError, ConnectionError, socket.error) as err:
         print("{}: {}".format(err, to_addr))
 
@@ -985,6 +1009,7 @@ def main():
 
     print(handshake_msgs)
     print(addr_msgs)
+    print(block_msgs)
 
     return 0
 
