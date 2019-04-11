@@ -29,8 +29,8 @@ CONF = {}
 
 app = Flask(__name__)
 
-EXPORT_PATH="/var/www/bitnodes/bitnodes/data/export"
-CRAWL_PATH="/var/www/bitnodes/bitnodes/data/crawl"
+EXPORT_PATH="/var/www/bitnodes/data/export"
+CRAWL_PATH="/var/www/bitnodes/data/crawl"
 LIST_SNAPSHOTS_URL="https://vpubchain.net/api/v1.0/snapshots/"
 
 @app.errorhandler(404)

@@ -332,6 +332,7 @@ def set_pending():
         try:
             ipv4_nodes = socket.getaddrinfo(seeder, None, socket.AF_INET)
         except socket.gaierror as err:
+            logging.warning("%s", seeder)
             logging.warning("%s", err)
         else:
             nodes.extend(ipv4_nodes)

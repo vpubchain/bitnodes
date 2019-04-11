@@ -11,8 +11,8 @@ import urllib2
 import json
 from ipaddress import ip_network
 
-EXPORT_PATH="/var/www/bitnodes/bitnodes/data/export"
-CRAWL_PATH="/var/www/bitnodes/bitnodes/data/crawl"
+EXPORT_PATH="/var/www/bitnodes/data/export"
+CRAWL_PATH="/var/www/bitnodes/data/crawl"
 LIST_SNAPSHOTS_URL="https://vpubchain.net/api/v1/snapshots/"
 locations={}
 
@@ -41,7 +41,7 @@ def new_redis_conn(db=0):
     """
     Returns new instance of Redis connection with the right db selected.
     """
-    socket = os.environ.get('REDIS_SOCKET', "/run/redis/redis.sock")
+    socket = os.environ.get('REDIS_SOCKET', "/var/run/redis/redis.sock")
     password = os.environ.get('REDIS_PASSWORD', None)
     return redis.StrictRedis(db=db, password=password, unix_socket_path=socket)
 
