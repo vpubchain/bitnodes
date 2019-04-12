@@ -206,7 +206,7 @@ def get_nodes_from_export(timestamp=None):
     
     list_time=None
     if timestamp is None:
-        list_time=int(time.time())        
+        list_time=int(time.time())
     else:
         if(timestamp=="latest"):
             list_time=int(time.time())
@@ -239,7 +239,7 @@ def get_nodes_from_export(timestamp=None):
         networks={}
         for data in datastore:
             data_len=len(data)
-            if data_len!=15:
+            if data_len!=16:
                 continue;
             list1=[]
             
@@ -250,8 +250,9 @@ def get_nodes_from_export(timestamp=None):
                     height=data[6]
 
             location=get_location(list1[8], list1[9])
-            list1.append(location)
-                        
+            list1.append(location["city"])
+            list1.append(location["country"])
+		
             if data[3] in agents.keys():
                 agents[data[3]]+=1
             else:

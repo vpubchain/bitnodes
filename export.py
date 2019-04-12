@@ -64,11 +64,23 @@ def get_row(node):
     geoip = REDIS_CONN.hget('resolve:{}'.format(address), 'geoip')
     if geoip is None:
         # city, country, latitude, longitude, timezone, asn, org
-        geoip = (None, None, 0.0, 0.0, None, None, None)
+        geoip = (None, None, 0.0, 0.0, None, None, None,)
     else:
         geoip = eval(geoip)
+    
+    rtts_sum = 0
+    rtts_avg = 0
+    rtts = REDIS_CONN.lrange('rtt:{}-{}'.format(address, port), 0, 100)
+    if len(rtts) >= 1:
+        for tmp_rtt in rtts:
+            rtts_sum = rtts_sum + int(tmp_rtt)
+        rtts_avg = rtts_sum / len(rtts)
+    
+    if rtts_avg == 0:
+        rtts_avg = 65535
+    rtt = (rtts_avg,)
 
-    return node + height + hostname + geoip
+    return node + height + hostname + geoip + rtt
 
 
 def export_nodes(nodes, timestamp):

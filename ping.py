@@ -272,7 +272,7 @@ def cron(pool):
     """
     publish_key = 'snapshot:{}'.format(hexlify(CONF['magic_number']))
     snapshot = None
-    publish_time = int(time.time())
+    publish_time = 0 
 
     while True:
         if CONF['master']:
