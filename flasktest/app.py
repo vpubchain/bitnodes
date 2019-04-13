@@ -422,8 +422,8 @@ def list_board_nodes_from_export(days):
 
     json_list=sorted(os.listdir(EXPORT_PATH), reverse=True)
     json_nums=len(json_list)
-    #print("json_nums=")
-    #print(json_nums)
+    print("json_nums=")
+    print(json_nums)
     if json_nums==0:
         return jsonify(results)
     
@@ -433,7 +433,7 @@ def list_board_nodes_from_export(days):
         file_time=int(file_times)
         a=time.localtime(file_time)
         minu=a.tm_min
-        pos=(minu+5)/6
+        #pos=(minu+5)/6
         b=time.strftime("%Y-%m-%d %H:00:00", a)
         b=time.mktime(time.strptime(b,'%Y-%m-%d %H:%M:%S')) 
     else:
@@ -442,14 +442,12 @@ def list_board_nodes_from_export(days):
     xaias=[]
     n=0
     nums=0
-    #print("pos=")
-    #print(pos)
-    for i in range(json_nums-pos):
-        #print("i=")
-        #print(i)
-        json_name=EXPORT_PATH+'/'+json_list[i+pos]
+    for i in range(json_nums):
+        print("i=")
+        print(i)
+        json_name=EXPORT_PATH+'/'+json_list[i]
         if os.path.isfile(json_name):
-            #print json_list[i]
+            print json_list[i]
             file_times,ext=json_list[i].split(".")
             try:
                 file_time=int(file_times)
@@ -474,7 +472,7 @@ def list_board_nodes_from_export(days):
                 total=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=15:
+                    if data_len!=16:
 	                #print "file_name="
                         #print(json_name)
                         continue;
