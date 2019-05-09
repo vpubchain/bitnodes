@@ -58,6 +58,17 @@ def get_row(node):
     else:
         height = (int(height),)
 
+    coldst = REDIS_CONN.get('coldst:{}-{}-{}'.format(address, port, services))
+    #print coldst
+    
+    #coldst = json.loads(coldst)
+    #coldst_status = False
+    if coldst is None:
+        coldst = (False, 0, 0, 0, 0)
+    
+    else:
+        coldst = eval(coldst)
+
     hostname = REDIS_CONN.hget('resolve:{}'.format(address), 'hostname')
     hostname = (hostname,)
 
@@ -80,7 +91,7 @@ def get_row(node):
         rtts_avg = 65535
     rtt = (rtts_avg,)
 
-    return node + height + hostname + geoip + rtt
+    return node + height + hostname + geoip + rtt + coldst
 
 
 def export_nodes(nodes, timestamp):

@@ -33,7 +33,7 @@ Reference: https://en.bitcoin.it/wiki/Protocol_specification
                            protocol version >= 70001
 -------------------------------------------------------------------------------
 [---MESSAGE---]
-[ 4] MAGIC_NUMBER               (\xF9\xBE\xB4\xD9)                  uint32_t
+[ 4] MAGIC_NUMBER               (\xF9\xF9\xE9\xB9)                  uint32_t
 [12] COMMAND                                                        char[12]
 [ 4] LENGTH                     <I (len(payload))                   uint32_t
 [ 4] CHECKSUM                   (sha256(sha256(payload))[:4])       uint32_t
@@ -152,14 +152,14 @@ from io import SEEK_CUR
 from operator import itemgetter
 
 #MAGIC_NUMBER = "\xF9\xBE\xB4\xD9"   #bitcoin,phore
-MAGIC_NUMBER = "\x90\x0D\x90\x3C"  #dash
+MAGIC_NUMBER = "\xF9\xF9\xE9\xB9"  #dash
 #PORT = 8333  #bitcoin
 PORT = 9900  #dash
 #PORT = 11771  #phore
 #MIN_PROTOCOL_VERSION = 70001
 #PROTOCOL_VERSION = 70015
 MIN_PROTOCOL_VERSION = 70001
-PROTOCOL_VERSION = 70208 #dash
+PROTOCOL_VERSION = 90208 #dash
 #PROTOCOL_VERSION = 70007  #phore
 #FROM_SERVICES = 0
 FROM_SERVICES = 0  #dash
@@ -308,7 +308,7 @@ class Serializer(object):
         return ''.join(msg)
 
     def deserialize_msg(self, data):
-        msg = {}
+	msg = {}
 
         data_len = len(data)
         if data_len < HEADER_LEN:
@@ -336,6 +336,8 @@ class Serializer(object):
             msg.update(self.deserialize_ping_payload(payload))
         elif msg['command'] == "addr":
             msg.update(self.deserialize_addr_payload(payload))
+        elif msg['command'] == "getcoldst":
+            msg.update(self.deserialize_getcoldst_payload(payload))
         elif msg['command'] == "inv":
             msg.update(self.deserialize_inv_payload(payload))
         elif msg['command'] == "tx":
@@ -403,6 +405,20 @@ class Serializer(object):
             msg['relay'] = struct.unpack("<?", data.read(1))[0]
         except struct.error:
             msg['relay'] = False
+
+        return msg
+
+    def deserialize_getcoldst_payload(self, data):
+	msg = {}
+        data = StringIO(data)
+
+        msg['enabled'] = unpack("<?", data.read(1))
+
+        msg['coin_in_stakeable_script'] = unpack("<q", data.read(8))
+        msg['coin_in_coldstakeable_script'] = unpack("<q", data.read(8))
+
+        msg['percent_in_coldstakeable_script'] = unpack("<q", data.read(8)) 
+        msg['currently_staking'] = unpack("<q", data.read(8)) 
 
         return msg
 
@@ -813,7 +829,7 @@ class Connection(object):
                 chunk = self.socket.recv(SOCKET_BUFSIZE)
                 if not chunk:
                     raise RemoteHostClosedConnection(
-                        "{} closed connection".format(self.to_addr))
+                        "{} 1closed connection".format(self.to_addr))
                 chunks.append(chunk)
                 length -= len(chunk)
             data = ''.join(chunks)
@@ -821,7 +837,7 @@ class Connection(object):
             data = self.socket.recv(SOCKET_BUFSIZE)
             if not data:
                 raise RemoteHostClosedConnection(
-                    "{} closed connection".format(self.to_addr))
+                    "{} 2closed connection".format(self.to_addr))
         if len(data) > SOCKET_BUFSIZE:
             end_t = time.time()
             self.bps.append((len(data) * 8) / (end_t - start_t))
@@ -841,7 +857,7 @@ class Connection(object):
             if msg.get('command') == "ping":
                 self.pong(msg['nonce'])  # respond to ping immediately
             elif msg.get('command') == "version":
-                self.verack()  # respond to version immediately
+		self.verack()  # respond to version immediately
             msgs.append(msg)
         if len(msgs) > 0 and commands:
             msgs[:] = [m for m in msgs if m.get('command') in commands]
@@ -885,6 +901,21 @@ class Connection(object):
         gevent.sleep(1)
         msgs = self.get_messages(commands=["addr"])
         return msgs
+
+    def getcoldstakinginfo(self, block=True):
+	# [getcoldstakinginfo] >>>
+	msg = self.serializer.serialize_msg(command="getcoldst")
+        #print msg
+	self.send(msg)
+
+	# Caller should call get_messages separately.
+	if not block:
+	    return None
+
+	# <<< [addr]..
+	gevent.sleep(1)
+	msgs = self.get_messages(commands=["getcoldst"])
+	return msgs
 
     def addr(self, addr_list):
         # addr_list = [(TIMESTAMP, SERVICES, "IP_ADDRESS", PORT),]
@@ -973,13 +1004,14 @@ class Connection(object):
 
 def main():
     #to_addr = ("136.243.139.96", PORT)
-    to_addr = ("47.104.25.28", PORT)
+    to_addr = ("192.168.0.172", 21738)
     #to_addr = ("47.105.68.82", 11771)
     #to_addr = ("192.168.0.134", 11771)
     to_services = TO_SERVICES
 
     handshake_msgs = []
     addr_msgs = []
+    coldstaking_msgs = []
 
     conn = Connection(to_addr, to_services=to_services)
     try:
@@ -989,18 +1021,22 @@ def main():
         print("handshake")
         handshake_msgs = conn.handshake()
 
-        print("getaddr")
-        addr_msgs = conn.getaddr()
+        #time.sleep(5)
+        #print("getaddr")
+        #addr_msgs = conn.getaddr()
 
-        print("getblocks")
-        block_msgs = conn.getblocks(['0000000e33e10c831906e2c4fb68258618af5d16f0fc381bd14787daaafe0179'])
+	print("getcoldstakinginfo")
+        coldstaking_msgs = conn.getcoldstakinginfo()
+
+        #print("getblocks")
+        #block_msgs = conn.getblocks(['0000000e33e10c831906e2c4fb68258618af5d16f0fc381bd14787daaafe0179'])
         
 
     except (ProtocolError, ConnectionError, socket.error) as err:
         print("{}: {}".format(err, to_addr))
 
-    print("close")
-    conn.close()
+    #print("close")
+    #conn.close()
 
     if len(handshake_msgs) > 0:
         services = handshake_msgs[0].get('services', 0)
@@ -1008,8 +1044,9 @@ def main():
             print('services ({}) != {}'.format(services, to_services))
 
     print(handshake_msgs)
-    print(addr_msgs)
-    print(block_msgs)
+    
+    #print(addr_msgs)
+    print(coldstaking_msgs)
 
     return 0
 

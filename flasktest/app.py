@@ -135,7 +135,7 @@ def list_nodes_from_export(timestamp):
             node_nums=0
             for data in datastore:
                 data_len=len(data)
-                if data_len!=16:
+                if data_len!=21:
                     continue;
                 list1=[]
                 
@@ -156,7 +156,7 @@ def list_nodes_from_export(timestamp):
                 node_nums=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=16:
+                    if data_len!=21:
                         continue;
                     list1=[]
                     
@@ -238,8 +238,10 @@ def get_nodes_from_export(timestamp=None):
         countrys={}
         networks={}
         for data in datastore:
+            print('111111')
             data_len=len(data)
-            if data_len!=16:
+            print data_len
+            if data_len!=21:
                 continue;
             list1=[]
             
@@ -282,8 +284,12 @@ def get_nodes_from_export(timestamp=None):
             
         if page==0:
             page=1
-        
+       
+	print('test666') 
         maxpage=(node_nums+page_per-1)/page_per
+        print node_nums
+        print page_per
+        print page
         if page>maxpage:
             return jsonify({'details': 'Not found'})
                                   
@@ -472,7 +478,7 @@ def list_board_nodes_from_export(days):
                 total=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=16:
+                    if data_len!=21:
 	                #print "file_name="
                         #print(json_name)
                         continue;
@@ -623,7 +629,7 @@ def list_24h_nodes_from_export():
                 total=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=16:
+                    if data_len!=21:
                         continue;
                     total+=1
                     list1=[]

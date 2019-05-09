@@ -108,6 +108,7 @@ def connect(redis_conn, key):
     """
     handshake_msgs = []
     addr_msgs = []
+    coldst_msgs = []
 
     redis_conn.set(key, "")  # Set Redis key for a new node
 
@@ -140,11 +141,32 @@ def connect(redis_conn, key):
         logging.debug("%s: %s", conn.to_addr, err)
 
     redis_pipe = redis_conn.pipeline()
+    
+    if len(handshake_msgs) > 0:
+        try:
+            conn.getcoldstakinginfo(block=False)
+        except (ProtocolError, ConnectionError, socket.error) as err:
+            logging.debug("1111 %s: %s", conn.to_addr, err)
+        else:
+            addr_wait = 0
+            while addr_wait < CONF['socket_timeout']:
+                addr_wait += 1
+                gevent.sleep(0.3)
+                try:
+                    msgs = conn.get_messages(commands=['getcoldst'])
+                except (ProtocolError, ConnectionError, socket.error) as err:
+                    logging.debug("2222 %s: %s", conn.to_addr, err)
+                    break
+                if msgs:
+                    coldst_msgs = msgs
+		    logging.debug("coldst_msg")
+                    break
+
     if len(handshake_msgs) > 0:
         try:
             conn.getaddr(block=False)
         except (ProtocolError, ConnectionError, socket.error) as err:
-            logging.debug("%s: %s", conn.to_addr, err)
+            logging.debug("1111 %s: %s", conn.to_addr, err)
         else:
             addr_wait = 0
             while addr_wait < CONF['socket_timeout']:
@@ -153,7 +175,7 @@ def connect(redis_conn, key):
                 try:
                     msgs = conn.get_messages(commands=['addr'])
                 except (ProtocolError, ConnectionError, socket.error) as err:
-                    logging.debug("%s: %s", conn.to_addr, err)
+                    logging.debug("2222 %s: %s", conn.to_addr, err)
                     break
                 if msgs and any([msg['count'] > 1 for msg in msgs]):
                     addr_msgs = msgs
@@ -166,8 +188,14 @@ def connect(redis_conn, key):
                           services, from_services)
             key = "node:{}-{}-{}".format(address, port, from_services)
         height_key = "height:{}-{}-{}".format(address, port, from_services)
+
+        if len(coldst_msgs) > 0:
+            coldst_key = "coldst:{}-{}-{}".format(address, port, from_services)
+            coldst_data = (coldst_msgs[0]["enabled"] , coldst_msgs[0]["coin_in_stakeable_script"] , coldst_msgs[0]["coin_in_coldstakeable_script"] , coldst_msgs[0]["percent_in_coldstakeable_script"] , coldst_msgs[0]["currently_staking"])
+            redis_pipe.setex(coldst_key, CONF['max_age'], coldst_data)
         redis_pipe.setex(height_key, CONF['max_age'],
                          version_msg.get('height', 0))
+        
         now = int(time.time())
         (peers, excluded) = enumerate_node(redis_pipe, addr_msgs, now)
         logging.debug("%s Peers: %d (Excluded: %d)",
@@ -331,6 +359,7 @@ def set_pending():
 
         try:
             ipv4_nodes = socket.getaddrinfo(seeder, None, socket.AF_INET)
+            logging.debug("ipv4 %s", seeder)
         except socket.gaierror as err:
             logging.warning("%s", seeder)
             logging.warning("%s", err)
@@ -341,6 +370,7 @@ def set_pending():
             try:
                 ipv6_nodes = socket.getaddrinfo(seeder, None, socket.AF_INET6)
             except socket.gaierror as err:
+                logging.warning("%s", seeder)
                 logging.warning("%s", err)
             else:
                 nodes.extend(ipv6_nodes)
@@ -359,6 +389,7 @@ def set_pending():
 
 
 def is_excluded(address):
+    return False
     """
     Returns True if address is found in exclusion list, False if otherwise.
     """
