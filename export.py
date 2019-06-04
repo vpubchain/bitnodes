@@ -64,11 +64,12 @@ def get_row(node):
     #coldst = json.loads(coldst)
     #coldst_status = False
     if coldst is None:
-        coldst = (False, 0, 0, 0, 0)
+        coldst = (False, 0, 0, 0, 0, [])
     
     else:
         coldst = eval(coldst)
 
+    print coldst
     hostname = REDIS_CONN.hget('resolve:{}'.format(address), 'hostname')
     hostname = (hostname,)
 

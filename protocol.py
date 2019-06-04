@@ -144,6 +144,7 @@ import socks
 import struct
 import sys
 import time
+import json
 from base64 import b32decode, b32encode
 from binascii import hexlify, unhexlify
 from collections import deque
@@ -311,6 +312,7 @@ class Serializer(object):
 	msg = {}
 
         data_len = len(data)
+        print data_len
         if data_len < HEADER_LEN:
             raise HeaderTooShortError("got {} of {} bytes".format(
                 data_len, HEADER_LEN))
@@ -410,17 +412,26 @@ class Serializer(object):
 
     def deserialize_getcoldst_payload(self, data):
 	msg = {}
+	#print '1111'
+	#print data
         data = StringIO(data)
 
-        msg['enabled'] = unpack("<?", data.read(1))
+	#print '2222'
+	#print data
+	msg = json.loads(self.deserialize_string(data))
+        
+	#msg['enabled'] = datas['enabled'];
+	#msg['coin_in_stakeable_script'] = datas['coin_in_stakeable_script'];
+        #msg['enabled'] = unpack("<?", data.read(1))
 
-        msg['coin_in_stakeable_script'] = unpack("<q", data.read(8))
-        msg['coin_in_coldstakeable_script'] = unpack("<q", data.read(8))
+        #msg['coin_in_stakeable_script'] = unpack("<q", data.read(8))
+        #msg['coin_in_coldstakeable_script'] = unpack("<q", data.read(8))
 
-        msg['percent_in_coldstakeable_script'] = unpack("<q", data.read(8)) 
-        msg['currently_staking'] = unpack("<q", data.read(8)) 
-
-        return msg
+        #msg['percent_in_coldstakeable_script'] = unpack("<q", data.read(8)) 
+        #msg['currently_staking'] = unpack("<q", data.read(8))
+	
+	print msg['enabled']
+        return msg 
 
     def serialize_ping_payload(self, nonce):
         payload = [

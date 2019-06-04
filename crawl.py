@@ -159,6 +159,7 @@ def connect(redis_conn, key):
                     break
                 if msgs:
                     coldst_msgs = msgs
+		    print coldst_msgs
 		    logging.debug("coldst_msg")
                     break
 
@@ -191,7 +192,7 @@ def connect(redis_conn, key):
 
         if len(coldst_msgs) > 0:
             coldst_key = "coldst:{}-{}-{}".format(address, port, from_services)
-            coldst_data = (coldst_msgs[0]["enabled"] , coldst_msgs[0]["coin_in_stakeable_script"] , coldst_msgs[0]["coin_in_coldstakeable_script"] , coldst_msgs[0]["percent_in_coldstakeable_script"] , coldst_msgs[0]["currently_staking"])
+            coldst_data = (coldst_msgs[0]["enabled"] , coldst_msgs[0]["coin_in_stakeable_script"] , coldst_msgs[0]["coin_in_coldstakeable_script"] , coldst_msgs[0]["percent_in_coldstakeable_script"] , coldst_msgs[0]["currently_staking"], coldst_msgs[0]["coldstake_list"])
             redis_pipe.setex(coldst_key, CONF['max_age'], coldst_data)
         redis_pipe.setex(height_key, CONF['max_age'],
                          version_msg.get('height', 0))

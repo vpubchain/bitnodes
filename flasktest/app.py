@@ -135,7 +135,7 @@ def list_nodes_from_export(timestamp):
             node_nums=0
             for data in datastore:
                 data_len=len(data)
-                if data_len!=21:
+                if data_len!=22:
                     continue;
                 list1=[]
                 
@@ -156,7 +156,7 @@ def list_nodes_from_export(timestamp):
                 node_nums=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=21:
+                    if data_len!=22:
                         continue;
                     list1=[]
                     
@@ -182,6 +182,81 @@ def list_nodes_from_export(timestamp):
                 return jsonify({'snapshots timestamp': 'no snapshot'})
             
         return jsonify(list_nodes)
+
+@app.route('/vpbitnodes/api/v1.0/coldstakes/<timestamp>/', methods=['GET'])
+@app.route('/vpbitnodes/api/v1.0/coldstakes/', methods=['GET'])
+def get_cold_nodes_from_export(timestamp=None):
+    page_per=10000
+    bfind = False
+    pos = 0
+    
+    parser = reqparse.RequestParser()
+    parser.add_argument('q',help='q')
+    parser.add_argument('page',help='page')
+    try:
+        args = parser.parse_args()   
+    
+        q=args['q']
+        page=args['page']
+        print(q)
+        print(page)
+    except Exception,ex:
+        page=1
+        pass    
+    
+    list_time=None
+    if timestamp is None:
+        list_time=int(time.time())
+    else:
+        if(timestamp=="latest"):
+            list_time=int(time.time())
+        else:
+            try:
+                list_time=int(timestamp)
+            except Exception,ex:
+                list_time=int(timestamp)
+    
+    search_name,search_time,next_time,previous_time=util.search_file(EXPORT_PATH,list_time)
+    print('test')
+    print(search_name,search_time,next_time,previous_time)
+    coldstakes={}
+    if search_name is None:
+        return jsonify({'details': 'Not found'})
+    else:                        
+        f=open(search_name, 'r')
+        datastore = json.load(f)
+        f.close()
+        list_nodes={}
+        list_nodes["timestamp"]=int(search_time)
+        
+        for data in datastore:
+            #print('111111')
+            data_len=len(data)
+            #print data_len
+            if data_len!=22:
+                continue;
+            
+            key=data[0].encode('utf8')+":"+str(data[1])                
+
+	    coldlists = data[21]
+            for coldstake in coldlists:
+                coldaddress = coldstake["addresses"][0]
+		stakevalue = coldstake["value"]
+                print coldaddress
+		if coldaddress in coldstakes.keys():
+		    coldstakes[coldaddress]["value"] += stakevalue 
+		else:
+		    tmpcoldstake={}
+                    #print stakevalue
+                    tmpcoldstake["value"] = stakevalue
+                    print tmpcoldstake["value"]
+                    tmpcoldstake["onlineaddress"] = key
+		    print tmpcoldstake
+		    #coldstakes[coldaddress]["value"] = 1 
+                    #coldstakes[coldaddress]["onlineaddress"] = key 
+                    coldstakes[coldaddress] = tmpcoldstake 
+
+    return jsonify(coldstakes)
 
 @app.route('/vpbitnodes/api/v1.0/nodes/<timestamp>/', methods=['GET'])
 @app.route('/vpbitnodes/api/v1.0/nodes/', methods=['GET'])
@@ -238,10 +313,10 @@ def get_nodes_from_export(timestamp=None):
         countrys={}
         networks={}
         for data in datastore:
-            print('111111')
+            #print('111111')
             data_len=len(data)
-            print data_len
-            if data_len!=21:
+            #print data_len
+            if data_len!=22:
                 continue;
             list1=[]
             
@@ -285,11 +360,11 @@ def get_nodes_from_export(timestamp=None):
         if page==0:
             page=1
        
-	print('test666') 
+	#print('test666') 
         maxpage=(node_nums+page_per-1)/page_per
-        print node_nums
-        print page_per
-        print page
+        #print node_nums
+        #print page_per
+        #print page
         if page>maxpage:
             return jsonify({'details': 'Not found'})
                                   
@@ -468,7 +543,7 @@ def list_board_nodes_from_export(days):
             if n==0 :
                     
                 xaias.append(b)
-                
+                print(json_name) 
                 f=open(json_name, 'r')
                 datastore = json.load(f)
                 f.close()
@@ -478,7 +553,7 @@ def list_board_nodes_from_export(days):
                 total=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=21:
+                    if data_len!=22:
 	                #print "file_name="
                         #print(json_name)
                         continue;
@@ -629,7 +704,7 @@ def list_24h_nodes_from_export():
                 total=0
                 for data in datastore:
                     data_len=len(data)
-                    if data_len!=21:
+                    if data_len!=22:
                         continue;
                     total+=1
                     list1=[]
