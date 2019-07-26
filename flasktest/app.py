@@ -198,8 +198,8 @@ def get_cold_nodes_from_export(timestamp=None):
     
         q=args['q']
         page=args['page']
-        print(q)
-        print(page)
+        #print(q)
+        #print(page)
     except Exception,ex:
         page=1
         pass    
@@ -217,8 +217,8 @@ def get_cold_nodes_from_export(timestamp=None):
                 list_time=int(timestamp)
     
     search_name,search_time,next_time,previous_time=util.search_file(EXPORT_PATH,list_time)
-    print('test')
-    print(search_name,search_time,next_time,previous_time)
+    #print('test')
+    #print(search_name,search_time,next_time,previous_time)
     coldstakes={}
     if search_name is None:
         return jsonify({'details': 'Not found'})
@@ -242,16 +242,16 @@ def get_cold_nodes_from_export(timestamp=None):
             for coldstake in coldlists:
                 coldaddress = coldstake["addresses"][0]
 		stakevalue = coldstake["value"]
-                print coldaddress
+                #print coldaddress
 		if coldaddress in coldstakes.keys():
 		    coldstakes[coldaddress]["value"] += stakevalue 
 		else:
 		    tmpcoldstake={}
                     #print stakevalue
                     tmpcoldstake["value"] = stakevalue
-                    print tmpcoldstake["value"]
+                    #print tmpcoldstake["value"]
                     tmpcoldstake["onlineaddress"] = key
-		    print tmpcoldstake
+		    #print tmpcoldstake
 		    #coldstakes[coldaddress]["value"] = 1 
                     #coldstakes[coldaddress]["onlineaddress"] = key 
                     coldstakes[coldaddress] = tmpcoldstake 
@@ -273,8 +273,8 @@ def get_nodes_from_export(timestamp=None):
     
         q=args['q']
         page=args['page']
-        print(q)
-        print(page)
+        #print(q)
+        #print(page)
     except Exception,ex:
         page=1
         pass    
@@ -292,8 +292,8 @@ def get_nodes_from_export(timestamp=None):
                 list_time=int(timestamp)
     
     search_name,search_time,next_time,previous_time=util.search_file(EXPORT_PATH,list_time)
-    print('test')
-    print(search_name,search_time,next_time,previous_time)
+    #print('test')
+    #print(search_name,search_time,next_time,previous_time)
     if search_name is None:
         return jsonify({'details': 'Not found'})
     else:                        
@@ -350,7 +350,7 @@ def get_nodes_from_export(timestamp=None):
     
             nodes[key]=list1
             node_nums=node_nums+1
-            print(key)            
+            #print(key)            
                         
         if page is None:
             page=1
@@ -430,7 +430,7 @@ def node_status_latency(address,port):
 
 @app.route('/vpbitnodes/api/v1.0/inv/<inv_hash>/', methods=['GET'])
 def get_data_propagation(inv_hash):   
-    print(inv_hash)
+    #print(inv_hash)
     invs_hash=util.get_inv_hash_from_redis(REDIS_CONN,inv_hash)    
     if invs_hash is None:
         return jsonify({'detail': 'Not found'})
@@ -503,8 +503,8 @@ def list_board_nodes_from_export(days):
 
     json_list=sorted(os.listdir(EXPORT_PATH), reverse=True)
     json_nums=len(json_list)
-    print("json_nums=")
-    print(json_nums)
+    #print("json_nums=")
+    #print(json_nums)
     if json_nums==0:
         return jsonify(results)
     
@@ -524,11 +524,11 @@ def list_board_nodes_from_export(days):
     n=0
     nums=0
     for i in range(json_nums):
-        print("i=")
-        print(i)
+        #print("i=")
+        #print(i)
         json_name=EXPORT_PATH+'/'+json_list[i]
         if os.path.isfile(json_name):
-            print json_list[i]
+            #print json_list[i]
             file_times,ext=json_list[i].split(".")
             try:
                 file_time=int(file_times)
@@ -543,12 +543,12 @@ def list_board_nodes_from_export(days):
             if n==0 :
                     
                 xaias.append(b)
-                print(json_name) 
+                #print(json_name) 
                 f=open(json_name, 'r')
                 datastore = json.load(f)
                 f.close()
-                print "load file_name="
-                print(json_name)
+                #print "load file_name="
+                #print(json_name)
 
                 total=0
                 for data in datastore:
