@@ -794,7 +794,10 @@ if  __name__ == '__main__':
     pp=[]
     global REDIS_CONN
     REDIS_CONN = new_redis_conn(0)#db=CONF['db'])
+    if REDIS_CONN == None:
+        print 'redis is nil'
     
+
     height = REDIS_CONN.get('height')
     
     #b1=[]

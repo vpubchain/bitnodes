@@ -31,7 +31,30 @@ Common helper methods.
 import os
 import redis
 from ipaddress import ip_network
+import smtplib
+from email.mime.text import MIMEText
 
+
+#邮件服务器地址及发送邮件账户和密码
+MAIL_FROM='280507775@qq.com'
+SMTP_SERVER='smtp.qq.com'
+EMAIL_USER='280507775@qq.com'
+EMAIL_PASSWD='huuepttziehlbghe'
+
+#对应服务器的邮件接收人,多个的话再考虑为数组
+MAILS ='280507775@qq.com'
+
+def sendwainingmail(body):
+    msg = MIMEText(body)
+    msg['Subject'] = '监管平台系统告警'
+    msg['From'] = MAIL_FROM
+    msg['To'] = MAILS
+
+    #发送邮件
+    server=smtplib.SMTP(SMTP_SERVER)
+    server.login(EMAIL_USER,EMAIL_PASSWD)
+    server.sendmail(MAIL_FROM, MAILS, msg.as_string())
+    server.quit()
 
 def new_redis_conn(db=0):
     """
@@ -50,7 +73,12 @@ def get_keys(redis_conn, pattern, count=500):
     keys = []
     cursor = 0
     while True:
-        (cursor, partial_keys) = redis_conn.scan(cursor, pattern, count)
+        try:
+            (cursor, partial_keys) = redis_conn.scan(cursor, pattern, count)
+        except:
+            sendwainingmail("redis异常！，请检查！")
+            break
+         
         keys.extend(partial_keys)
         if cursor == 0:
             break

@@ -47,7 +47,7 @@ from binascii import hexlify, unhexlify
 from ConfigParser import ConfigParser
 
 from protocol import ProtocolError, ConnectionError, Connection
-from utils import new_redis_conn, get_keys, ip_to_network
+from utils import new_redis_conn, get_keys, ip_to_network, sendwainingmail
 
 redis.connection.socket = gevent.socket
 
@@ -301,9 +301,13 @@ def cron(pool):
                 logging.info("publish now: %d", publish_time)
                 REDIS_CONN.publish(publish_key, publish_time)
 
-            connections = REDIS_CONN.scard('open')
+            try:
+                connections = REDIS_CONN.scard('open')
+            except:
+                sendwainingmail("redis异常！，请检查！")
+                return
+                
             logging.info("Connections: %d", connections)
-
             set_bestblockhash()
 
         for _ in xrange(min(REDIS_CONN.scard('reachable'), pool.free_count())):

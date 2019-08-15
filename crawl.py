@@ -56,7 +56,7 @@ from protocol import (
     ConnectionError,
     ProtocolError,
 )
-from utils import new_redis_conn, get_keys, ip_to_network
+from utils import new_redis_conn, get_keys, ip_to_network, sendwainingmail
 
 redis.connection.socket = gevent.socket
 
@@ -577,7 +577,11 @@ def main(argv):
     REDIS_CONN = new_redis_conn(db=CONF['db'])
 
     if CONF['master']:
-        REDIS_CONN.set('crawl:master:state', "starting")
+        try:
+            REDIS_CONN.set('crawl:master:state', "starting")
+        except:
+            sendwainingmail("redis异常！，请检查！")
+            return -1
         logging.info("Removing all keys")
         redis_pipe = REDIS_CONN.pipeline()
         redis_pipe.delete('up')
