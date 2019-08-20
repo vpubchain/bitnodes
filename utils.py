@@ -36,10 +36,10 @@ from email.mime.text import MIMEText
 
 
 #邮件服务器地址及发送邮件账户和密码
-MAIL_FROM='280507775@qq.com'
+MAIL_FROM='jiuling-monitor@qq.com'
 SMTP_SERVER='smtp.qq.com'
-EMAIL_USER='280507775@qq.com'
-EMAIL_PASSWD='huuepttziehlbghe'
+EMAIL_USER='jiuling-monitor@qq.com'
+EMAIL_PASSWD='yfuruymkbtqlfgie'
 
 #对应服务器的邮件接收人,多个的话再考虑为数组
 MAILS ='280507775@qq.com'
