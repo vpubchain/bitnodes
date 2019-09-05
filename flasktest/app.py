@@ -394,7 +394,144 @@ def get_nodes_from_export(timestamp=None):
         list_nodes['next']=next_time
         list_nodes['previous']=previous_time
         
-        return jsonify(list_nodes)    
+        return jsonify(list_nodes) 
+
+
+@app.route('/vpbitnodes/api/v1.0/nodesinfo/<timestamp>/', methods=['GET'])
+@app.route('/vpbitnodes/api/v1.0/nodesinfo/', methods=['GET'])
+def get_nodesinfo_from_export(timestamp=None):
+    page_per=10
+    bfind = False
+    pos = 0
+    
+    parser = reqparse.RequestParser()
+    parser.add_argument('q',help='q')
+    parser.add_argument('page',help='page')
+    try:
+        args = parser.parse_args()   
+    
+        q=args['q']
+        page=args['page']
+        #print(q)
+        #print(page)
+    except Exception,ex:
+        page=1
+        pass    
+    
+    list_time=None
+    if timestamp is None:
+        list_time=int(time.time())
+    else:
+        if(timestamp=="latest"):
+            list_time=int(time.time())
+        else:
+            try:
+                list_time=int(timestamp)
+            except Exception,ex:
+                list_time=int(timestamp)
+    
+    search_name,search_time,next_time,previous_time=util.search_file(EXPORT_PATH,list_time)
+    #print('test')
+    #print(search_name,search_time,next_time,previous_time)
+    if search_name is None:
+        return jsonify({})
+    else:                        
+        f=open(search_name, 'r')
+        datastore = json.load(f)
+        f.close()
+        list_nodes={}
+        list_nodes["timestamp"]=int(search_time)
+        
+        nodes={}
+        height=0
+        node_nums=0
+        ipv4_nums=0
+        ipv6_nums=0
+        onion_nums=0
+        agents={}
+        countrys={}
+        networks={}
+        for data in datastore:
+            #print('111111')
+            data_len=len(data)
+            #print data_len
+            if data_len!=22:
+                continue;
+            list1={}
+            #list1={'address':'','protocol':0,'version':0,'height':0, 'city':'','country':'','network':''}
+            print data
+            key=data[0].encode('utf8')+":"+str(data[1])
+            list1['address'] = key
+            list1['height'] = 0                
+            for i in range(data_len-2):
+                #list1.address = data[i+2]
+                #list1.append(data[i+2])
+                if list1['height']<data[6]:
+                    list1['height']=data[6]
+
+            location=get_location(data[10], data[11])
+            list1['city'] = location["city"]
+            list1['country'] = location["country"]
+            list1['protocol'] = data[2]
+            list1['version'] = data[3]
+            list1['network'] = data[14]
+            list1['asns'] = data[13]
+    
+            nodes[key] = list1
+            node_nums=node_nums+1
+            #print(key)            
+                        
+        if page is None:
+            page=1
+        else:
+            page=int(page)
+            
+        if page==0:
+            page=1
+       
+	#print('test666') 
+        maxpage=(node_nums+page_per-1)/page_per
+        #print node_nums
+        #print page_per
+        #print page
+        if page>maxpage:
+            return jsonify({})                   
+        
+        if q is None:        
+            search_nodes_nums=node_nums        
+            list_nodes['nodes']=util.dict_slice(nodes, (page-1)*page_per, page*page_per)
+        else:
+            nodess,search_nodes_nums=util.find_nodes_by_field(nodes,q)        
+            list_nodes['nodes']=util.dict_slice(nodess, (page-1)*page_per, page*page_per)
+        
+        return jsonify(list_nodes['nodes'])
+
+
+@app.route('/vpbitnodes/api/v1.0/nodesnum/<timestamp>/', methods=['GET'])
+@app.route('/vpbitnodes/api/v1.0/nodesnum/', methods=['GET'])
+def get_nodesnum_from_export(timestamp=None):
+    list_time=None
+    if timestamp is None:
+        list_time=int(time.time())
+    else:
+        if(timestamp=="latest"):
+            list_time=int(time.time())
+        else:
+            try:
+                list_time=int(timestamp)
+            except Exception,ex:
+                list_time=int(timestamp)
+    
+    search_name,search_time,next_time,previous_time=util.search_file(EXPORT_PATH,list_time)
+    #print('test')
+    #print(search_name,search_time,next_time,previous_time)
+    if search_name is None:
+        return jsonify({'num': 0})
+    else:                        
+        f=open(search_name, 'r')
+        datastore = json.load(f)
+        f.close()
+        return jsonify({'num': len(datastore)})    
 
 @app.route('/vpbitnodes/api/v1.0/nodes/<address>-<port>', methods=['GET'])
 def node_status(address,port):    
@@ -503,8 +640,8 @@ def list_board_nodes_from_export(days):
 
     json_list=sorted(os.listdir(EXPORT_PATH), reverse=True)
     json_nums=len(json_list)
-    #print("json_nums=")
-    #print(json_nums)
+    print("json_nums=")
+    print(json_nums)
     if json_nums==0:
         return jsonify(results)
     
