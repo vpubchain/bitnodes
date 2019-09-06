@@ -509,7 +509,7 @@ def get_nodesinfo_from_export(timestamp=None):
     #print('test')
     #print(search_name,search_time,next_time,previous_time)
     if search_name is None:
-        return jsonify({})
+        return jsonify([])
     else:                        
         f=open(search_name, 'r')
         datastore = json.load(f)
@@ -517,7 +517,7 @@ def get_nodesinfo_from_export(timestamp=None):
         list_nodes={}
         list_nodes["timestamp"]=int(search_time)
         
-        nodes={}
+        nodes=[]
         height=0
         node_nums=0
         ipv4_nums=0
@@ -552,7 +552,8 @@ def get_nodesinfo_from_export(timestamp=None):
             list1['network'] = data[14]
             list1['asns'] = data[13]
     
-            nodes[key] = list1
+            #nodes[key] = list1
+            nodes.append(list1)
             node_nums=node_nums+1
             #print(key)            
                         
@@ -570,16 +571,17 @@ def get_nodesinfo_from_export(timestamp=None):
         #print page_per
         #print page
         if page>maxpage:
-            return jsonify({})                   
+            return jsonify([])                   
         
-        if q is None:        
-            search_nodes_nums=node_nums        
-            list_nodes['nodes']=util.dict_slice(nodes, (page-1)*page_per, page*page_per)
-        else:
-            nodess,search_nodes_nums=util.find_nodes_by_field(nodes,q)        
-            list_nodes['nodes']=util.dict_slice(nodess, (page-1)*page_per, page*page_per)
+        return jsonify(nodes[(page-1)*page_per:page*page_per])
+        #if q is None:        
+        #    search_nodes_nums=node_nums        
+        #    list_nodes['nodes']=util.dict_slice(nodes, (page-1)*page_per, page*page_per)
+        #else:
+        #    nodess,search_nodes_nums=util.find_nodes_by_field(nodes,q)        
+        #    list_nodes['nodes']=util.dict_slice(nodess, (page-1)*page_per, page*page_per)
         
-        return jsonify(list_nodes['nodes'])
+        #return jsonify(list_nodes['nodes'])
 
 
 @app.route('/vpbitnodes/api/v1.0/nodesnum/<timestamp>/', methods=['GET'])
