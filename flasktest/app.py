@@ -482,11 +482,13 @@ def get_nodesinfo_from_export(timestamp=None):
     parser = reqparse.RequestParser()
     parser.add_argument('q',help='q')
     parser.add_argument('page',help='page')
+    parser.add_argument('pagesize',help='pagesize')
     try:
         args = parser.parse_args()   
     
         q=args['q']
         page=args['page']
+        page_per=int(args['pagesize'])
         #print(q)
         #print(page)
     except Exception,ex:
@@ -534,7 +536,7 @@ def get_nodesinfo_from_export(timestamp=None):
                 continue;
             list1={}
             #list1={'address':'','protocol':0,'version':0,'height':0, 'city':'','country':'','network':''}
-            print data
+            #print data
             key=data[0].encode('utf8')+":"+str(data[1])
             list1['address'] = key
             list1['height'] = 0                
