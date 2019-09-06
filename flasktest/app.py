@@ -411,9 +411,9 @@ def get_nodesinfo_by_ip_from_export(timestamp=None):
         q=args['q']
         ip=args['ip']
         #print(q)
-        #print(page)
+        print(ip)
     except Exception,ex:
-        return jsonify({})    
+        return jsonify({'error':'not found'})
     
     list_time=None
     if timestamp is None:
@@ -431,41 +431,33 @@ def get_nodesinfo_by_ip_from_export(timestamp=None):
     #print('test')
     #print(search_name,search_time,next_time,previous_time)
     if search_name is None:
-        return jsonify({})
-    else:                        
+        return jsonify({'error':'not found'})
+    else:
         f=open(search_name, 'r')
         datastore = json.load(f)
         f.close()
         list_nodes={}
         list_nodes["timestamp"]=int(search_time)
         
-        nodes={}
         height=0
         node_nums=0
         ipv4_nums=0
         ipv6_nums=0
         onion_nums=0
-        agents={}
-        countrys={}
-        networks={}
         for data in datastore:
             #print('111111')
             data_len=len(data)
             #print data_len
             if data_len!=22:
-                continue;
+                continue
             if data[0] != ip:
                 continue
             list1={}
-            #list1={'address':'','protocol':0,'version':0,'height':0, 'city':'','country':'','network':''}
-            #print data
 
             key=data[0].encode('utf8')+":"+str(data[1])
             list1['address'] = key
             list1['height'] = 0                
             for i in range(data_len-2):
-                #list1.address = data[i+2]
-                #list1.append(data[i+2])
                 if list1['height']<data[6]:
                     list1['height']=data[6]
 
@@ -478,6 +470,7 @@ def get_nodesinfo_by_ip_from_export(timestamp=None):
             list1['asns'] = data[13]
     
             return jsonify(list1)
+    return jsonify({'error':'not found'})
 
 @app.route('/vpbitnodes/api/v1.0/nodesinfo/<timestamp>/', methods=['GET'])
 @app.route('/vpbitnodes/api/v1.0/nodesinfo/', methods=['GET'])
