@@ -836,6 +836,8 @@ def get_nodes_from_export(timestamp=None):
         datastore.append(ext_node)
         ext_node = ["47.104.38.35", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
         datastore.append(ext_node)
+
+        
         
 
         list_nodes={}
