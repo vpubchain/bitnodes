@@ -837,7 +837,7 @@ def get_nodes_from_export(timestamp=None):
         ext_node = ["47.104.38.35", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
         datastore.append(ext_node)
 
-        
+
         
 
         list_nodes={}
@@ -1620,18 +1620,6 @@ def list_board_nodes_from_export(days):
                 ext_node = ["47.104.38.37", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
                 datastore.append(ext_node)
                 ext_node = ["47.104.38.36", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
-                datastore.append(ext_node)
-                ext_node = ["47.104.38.35", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
-                datastore.append(ext_node)
-                ext_node = ["47.104.38.34", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
-                datastore.append(ext_node)
-                ext_node = ["47.104.38.33", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
-                datastore.append(ext_node)
-                ext_node = ["47.104.38.32", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
-                datastore.append(ext_node)
-                ext_node = ["47.104.38.31", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
-                datastore.append(ext_node)
-                ext_node = ["47.104.38.30", 9090, 90007, "/Satoshi:0.19.0.1(bitcore)/", 1570333352, 1069, 23887, "120.79.93.237", None, "CN", 36.45, 120.90, "Asia/Shanghai", "AS37963", "Hangzhou Alibaba Advertising Co.,Ltd.", 65535, False, 0.0, 0.0, 0.0, 0.0, []]
                 datastore.append(ext_node)
     
                 #print "load file_name="
