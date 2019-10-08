@@ -789,7 +789,7 @@ def get_nodes_from_export(timestamp=None):
                 continue;
             list1=[]
             
-            key=data[0].encode('utf8')+":"+str(data[1])                
+            key=data[0].encode('utf8')#+":"+str(data[1])                
             for i in range(data_len-2):
                 list1.append(data[i+2])
                 if height<data[6]:
