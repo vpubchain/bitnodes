@@ -1,22 +1,23 @@
 #!/bin/bash
+ulimit -n 102400
 # --- bitcoin mainnet: f9beb4d9 (db = 0) ---
 python -u crawl.py conf/crawl.conf master > log/crawl.master.out 2>&1 &
 python -u crawl.py conf/crawl.conf slave > log/crawl.slave.1.out 2>&1 &
 python -u crawl.py conf/crawl.conf slave > log/crawl.slave.2.out 2>&1 &
-python -u crawl.py conf/crawl.conf slave > log/crawl.slave.3.out 2>&1 &
-python -u crawl.py conf/crawl.conf slave > log/crawl.slave.4.out 2>&1 &
-python -u crawl.py conf/crawl.conf slave > log/crawl.slave.5.out 2>&1 &
+#python -u crawl.py conf/crawl.conf slave > log/crawl.slave.3.out 2>&1 &
+#python -u crawl.py conf/crawl.conf slave > log/crawl.slave.4.out 2>&1 &
+#python -u crawl.py conf/crawl.conf slave > log/crawl.slave.5.out 2>&1 &
 
 python -u ping.py conf/ping.conf master > log/ping.master.out 2>&1 &
 python -u ping.py conf/ping.conf slave > log/ping.slave.1.out 2>&1 &
 python -u ping.py conf/ping.conf slave > log/ping.slave.2.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.3.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.4.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.5.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.6.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.7.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.8.out 2>&1 &
-python -u ping.py conf/ping.conf slave > log/ping.slave.9.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.3.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.4.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.5.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.6.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.7.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.8.out 2>&1 &
+#python -u ping.py conf/ping.conf slave > log/ping.slave.9.out 2>&1 &
 
 python -u resolve.py conf/resolve.conf > log/resolve.out 2>&1 &
 
